@@ -1,0 +1,10 @@
+modelos\Cliente.class
+beans\CatalogoBean.class
+beans\MensajesAlertas.class
+modelos\Usuario.class
+beans\ClienteBean.class
+modelos\Operador.class
+beans\OperadorBean.class
+beans\UsuarioBean.class
+modelos\Producto.class
+modelos\CompraCliente.class

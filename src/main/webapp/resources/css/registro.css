@@ -1,0 +1,106 @@
+.contenedor {
+    width: 100%;
+    height: calc(100vh - 2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contenedor:before {
+    background: #f5f5f5;
+    content: "";
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.contiene_cuerpo {
+    background: #fff;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    box-shadow: 1px 1px 6px #8080808f;
+    border-radius: 1rem;
+    max-height: 42rem;
+    max-width: 82rem;
+}
+
+.imagen {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 1rem 0 0 1rem;
+}
+
+.formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 2rem
+}
+
+.contiene_titulo_logo {
+    display: flex;
+    flex-direction: column;
+}
+
+.contiene_titulo_logo > h2 {
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.text_span {
+    font-size: 0.9rem;
+    color: gray;
+}
+
+.imagen_logo {
+    width: 5rem
+}
+
+.form_inputs {
+    width: 100%;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.contiene_input {
+    width: 100%;
+    display: grid;
+    gap: 0.3rem;
+}
+
+.contiene_btn {
+    display: grid;
+    gap: 1rem;
+    justify-items: end;
+}
+
+.btn_change {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btn_change:hover {
+    text-decoration: underline
+}
+
+.btn_registro {
+    background: #c0c0c0;
+    width: 100%;
+    height: 2.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 1px 1px 6px #c8c8c869;
+    margin-top: 0.5rem;
+}

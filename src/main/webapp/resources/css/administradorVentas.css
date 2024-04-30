@@ -1,0 +1,200 @@
+.admi_contenedor,
+.contenedor_cliente {
+    max-width: calc(100vw - 10rem);
+    margin: 0 auto;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.3rem 1rem 1rem;
+    background: #fff;
+    box-shadow: 1px 1px 6px #80808070;
+    border-radius: 0 0 1rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.imagen_logo {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    cursor: pointer
+}
+
+.contenedor_btn_close {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ff0000;
+    cursor: pointer;
+}
+
+.btn_close {
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #ff0000;
+    cursor: pointer;
+}
+
+.menu_admi {
+    width: 100%;
+    height: calc(100vh - 85px);
+    padding: 1rem 0;
+    display: grid;
+    grid-template-columns: 16rem 1fr;
+    gap: 1rem;
+}
+
+.lista_opciones {
+    padding: 1rem;
+    display: grid;
+    gap: 0.5rem;
+    box-shadow: 1px 1px 6px #80808085;
+    border-radius: 0.5rem;
+    background: #fff;
+}
+
+.item_list, .item_admi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    box-shadow: 1px 1px 6px gray;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.4s ease-in-out;
+    position: relative;
+}
+
+.btn_item_list {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    position: absolute;
+    cursor: pointer;
+}
+
+.item_admi {
+    flex-direction: column;
+    gap: 0;
+}
+
+.item_list:hover {
+    transition: 0.4s ease-in-out;
+    transform: scale(1.05)
+}
+
+.vista_item_menu {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    gap: 1rem;
+    box-shadow: 1px 1px 6px #80808085;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    flex-direction: column;
+    background: #fff;
+}
+
+.subtitulo_item {
+    color: #989898;
+    font-weight: 500;
+}
+
+.info_cliente {
+    padding: 0.5rem 0;
+}
+
+.info_item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+}
+
+.lista_cartas,
+.lista_catalogo{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-evenly;
+}
+
+.footer_btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/*Estilos de primefaces*/
+body .ui-card {
+    width: 20em;
+    overflow: auto;
+    max-height: 27rem;
+}
+
+/*Scroll barra*/
+
+body .ui-card::-webkit-scrollbar {
+    width: 0px;
+}
+
+.vista_item_menu::-webkit-scrollbar {
+    width: 5px;
+}
+
+.vista_item_menu::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.vista_item_menu::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* Cliente */
+
+.titulo_catagolo {
+    border-bottom: 1px solid #80808033;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.lista_subtitulos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem
+}
+
+.modal_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.contiene_input {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.menu_seleccionado {
+    background: #dfdfdf;
+}
+
+/*Estilos globales*/
+
+body .ui-datatable thead th {
+    background: transparent !important;
+}
+
+body .ui-datatable thead th .ui-column-title {
+    font-weight: 500 !important;
+}
