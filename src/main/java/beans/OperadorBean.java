@@ -23,7 +23,7 @@ public class OperadorBean implements Serializable {
 
     private List<CompraCliente> listaProductosOperadorActivo = new ArrayList<>();
     private List<CompraCliente> listaTodosLosProductosEsteUsuario = new ArrayList<>();
-    private List<CompraCliente> listaProductosEnviados = new ArrayList<>();
+    private List<CompraCliente> listaProductosVendidos = new ArrayList<>();
 
     private CompraCliente productoSeleccionAEnviar = new CompraCliente();
     private CompraCliente productoSeleccionACancelar = new CompraCliente();
@@ -46,7 +46,7 @@ public class OperadorBean implements Serializable {
         }
 
         this.obtenerTodosLosProductos();
-        this.mostrarProductosEnviados();
+        this.mostrarProductosVendidos();
     }
 
     public void obtenerTodosLosProductos() {
@@ -61,13 +61,13 @@ public class OperadorBean implements Serializable {
         }
     }
 
-    public void mostrarProductosEnviados() {
+    public void mostrarProductosVendidos() {
 
-        this.listaProductosEnviados.clear();
+        this.listaProductosVendidos.clear();
 
-        for (CompraCliente proEnviados : this.clienteBean.getListaTodosProductosComprados()) {
-            if (proEnviados.getEstadoCompra().equals("Enviado")) {
-                listaProductosEnviados.add(proEnviados);
+        for (CompraCliente proVendido : this.clienteBean.getListaTodosProductosComprados()) {
+            if (proVendido.getEstadoCompra().equals("Vendido")) {
+                listaProductosVendidos.add(proVendido);
             }
         }
 
@@ -89,23 +89,26 @@ public class OperadorBean implements Serializable {
 
         Producto productoModiCatalogo = this.catalogoBean.getListaProductos().get(posicionProductoCatalogo);
 
-        if (productoModiCatalogo.getCantidadAlmacenamiento() == 0) {
-            MensajesAlertas.showError("Producto agotado", "Este producto esta agotado");
+        if (this.productoSeleccionAEnviar.getProductoComprado().getCantidadAlmacenamiento() == 0
+                || productoModiCatalogo.getCantidadAlmacenamiento() < this.productoSeleccionAEnviar.getCantidadComprada()) {
+            MensajesAlertas.showWarn("Producto agotado", "Este producto esta agotado o no hay la cantidad solicitada, revise el catalogo y luego cancele el pedido explicando el motivo");
             return;
         }
 
         // Producto del catalogo
-        productoModiCatalogo.setCantidadAlmacenamiento(productoModiCatalogo.getCantidadAlmacenamiento() - 1);
+        productoModiCatalogo.setCantidadAlmacenamiento(productoModiCatalogo.getCantidadAlmacenamiento() - this.productoSeleccionAEnviar.getCantidadComprada());
 
         // Buscamos la posicion de este detalle en la lista de los productos comprados
         int posicionPCC = this.clienteBean.getListaTodosProductosComprados().indexOf(this.productoSeleccionAEnviar);
 
         // Detalle de venta
-        this.productoSeleccionAEnviar.setEstadoCompra("Enviado");
+        this.productoSeleccionAEnviar.setEstadoCompra("Vendido");
         this.productoSeleccionAEnviar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
         // Cambiar disponibilidad del producto si ya se vendio todo
-        productoModiCatalogo.setDisponibilidad(false);
+        if (productoModiCatalogo.getCantidadAlmacenamiento() == 0) {
+            productoModiCatalogo.setDisponibilidad(false);
+        }
 
         // Guardar el producto del catalogo que compraron
         this.catalogoBean.getListaProductos().set(posicionProductoCatalogo, productoModiCatalogo);
@@ -177,12 +180,12 @@ public class OperadorBean implements Serializable {
         return listaTodosLosProductosEsteUsuario;
     }
 
-    public List<CompraCliente> getListaProductosEnviados() {
-        return listaProductosEnviados;
+    public List<CompraCliente> getListaProductosVendidos() {
+        return listaProductosVendidos;
     }
 
-    public void setListaProductosEnviados(List<CompraCliente> listaProductosEnviados) {
-        this.listaProductosEnviados = listaProductosEnviados;
+    public void setListaProductosVendidos(List<CompraCliente> listaProductosVendidos) {
+        this.listaProductosVendidos = listaProductosVendidos;
     }
 
     public void setListaTodosLosProductosEsteUsuario(List<CompraCliente> listaTodosLosProductosEsteUsuario) {
