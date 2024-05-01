@@ -32,22 +32,22 @@
 
                         <p class="info_item">
                             <i class="pi pi-user" style="font-size: 1.1rem"></i>
-                            #{producto.productoComprado.usuario.nombreCompleto}
+                            #{producto.usuario.nombreCompleto}
                         </p>
                         <p class="info_item">
                             <i class="pi pi-tablet" style="font-size: 1.1rem"></i>
-                            #{producto.productoComprado.usuario.telefono}
+                            #{producto.usuario.telefono}
                         </p>
                         <p class="info_item">
                             <i class="pi pi-at" style="font-size: 1.1rem"></i>
-                            #{producto.productoComprado.usuario.email}
+                            #{producto.usuario.email}
                         </p>
                     </div>
 
                     <f:facet name="footer">
                         <div class="footer_btns">
                             <h:commandButton class="btn-primary" value="Enviar" actionListener="#{operadorBean.enviarProductoAcliente(producto)}" />
-                            <h:commandButton class="btn-red" value="Cancelar" actionListener="#{operadorBean.cancelarProductoCliente(producto, 'Cancelado')}" />
+                            <h:commandButton class="btn-red" value="Cancelar" actionListener="#{operadorBean.onAbrirModalCancelarProducto(producto)}" />
                         </div>
                     </f:facet>
                 </p:card>
@@ -61,10 +61,27 @@
 
                     <div class="contiene_input">
                         <p:outputLabel value="Dirección" />
-                        <p:inputText autocomplete="false" placeholder="Dirección..." />
+                        <p:inputText autocomplete="false" placeholder="Dirección..." value="#{operadorBean.productoSeleccionAEnviar.direccionEnvio}" />
                     </div>
 
-                    <h:commandButton class="btn btn-primary" value="Completar" actionListener="#{clienteBean.comprarProductoSeleccionado()}" />
+                    <h:commandButton class="btn btn-primary" value="Completar" actionListener="#{operadorBean.completarEnvioProducto()}" />
+
+                </div>
+
+            </p:dialog>
+            
+            <!--Modal para cancelar producto-->
+            
+            <p:dialog header="Completar compra" widgetVar="dlg3" minHeight="40" width="350" showEffect="fade" modal="true">
+
+                <div class="modal_contenedor">
+
+                    <div class="contiene_input">
+                        <p:outputLabel value="Motivo de la cancelación" />
+                        <p:inputText autocomplete="false" value="#{operadorBean.productoSeleccionACancelar.estadoCompra}" placeholder="Motivo por el cual no puedes enviar el producto?..." />
+                    </div>
+
+                    <h:commandButton class="btn btn-primary" value="Completar" actionListener="#{operadorBean.cancelarProductoCliente()}" />
 
                 </div>
 

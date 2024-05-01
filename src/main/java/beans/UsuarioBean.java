@@ -1,11 +1,8 @@
 package beans;
 
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.*;
 import modelos.*;
@@ -106,7 +103,7 @@ public class UsuarioBean implements Serializable {
                 if (usuarioIni.getTipoUsuario().equals("Cliente")) {
                     this.usuarioActivoCliente = (Cliente) usuarioIni;
                     this.paginaActualCO = "cliente/menuCliente.xhtml";
-                    this.clienteBean.actualizarListaProductosCompradosPorXUsuario(usuarioIni);
+                    this.clienteBean.actualizarListaProductosCompradosPorXUsuario();
                 } else {
 
                     this.usuarioActivoOperador = (Operador) usuarioIni;
@@ -122,6 +119,21 @@ public class UsuarioBean implements Serializable {
         if (!existeUsuario) {
             MensajesAlertas.showWarn("Revise sus credenciales", "Revisa tu contraseña o email");
         }
+
+    }
+
+    public String usuarioAConocerOperador(String idUsuario) {
+
+        Operador operador = null;
+        
+        for (Operador ope : this.listTodosOperadores) {
+            if (ope.getId().equals(idUsuario)) {
+                operador = ope;
+                break;
+            }
+        }
+
+        return operador.getNombreCompleto();
 
     }
 
@@ -143,8 +155,6 @@ public class UsuarioBean implements Serializable {
     }
 
     public void cerrarSesion() {
-        this.limpiarCache();
-        
         this.isUsuarioActivoNow = false;
         this.usuarioActivoCliente = new Cliente();
         this.usuarioActivoOperador = new Operador();
@@ -157,17 +167,7 @@ public class UsuarioBean implements Serializable {
 
         //Operador
         this.operadorBean.getListaProductosOperadorActivo().clear();
-        
-    }
 
-    public void limpiarCache() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = facesContext.getExternalContext();
-        HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
-
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-        response.setDateHeader("Expires", 0); // Proxies.
     }
 
     public List<Usuario> getListTodosUsuarios() {

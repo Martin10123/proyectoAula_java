@@ -38,8 +38,8 @@
 
                         <f:facet name="footer">
                             <div class="footer_btns">
-                                <h:commandButton class="btn btn-primary" value="Comprar" actionListener="#{clienteBean.abrirModalCompletarCompra(produSeleccionado)}" />
-                                <h:commandButton class="btn btn-red" value="Quitar" actionListener="#{clienteBean.quitarProductoSeleccionado(produSeleccionado)}" />
+                                <h:commandButton actionListener="#{clienteBean.onModalCompletarCompra(produSeleccionado)}" class="btn btn-primary" value="Comprar" />
+                                <h:commandButton actionListener="#{clienteBean.onQuitarProductoAComprar(produSeleccionado)}" class="btn btn-red" value="Quitar" />
                             </div>
                         </f:facet>
                     </p:card>
@@ -76,7 +76,7 @@
                         </p:selectOneMenu>
                     </div>
 
-                    <h:commandButton class="btn btn-primary" value="Completar" actionListener="#{clienteBean.comprarProductoSeleccionado()}" />
+                    <h:commandButton actionListener="#{clienteBean.onCompletarCompraProducto()}" class="btn btn-primary" value="Completar" />
 
                 </div>
 

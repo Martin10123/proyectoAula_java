@@ -22,8 +22,11 @@ public class OperadorBean implements Serializable {
     private CatalogoBean catalogoBean;
 
     private List<CompraCliente> listaProductosOperadorActivo = new ArrayList<>();
+    private List<CompraCliente> listaTodosLosProductosEsteUsuario = new ArrayList<>();
+    private List<CompraCliente> listaProductosEnviados = new ArrayList<>();
 
     private CompraCliente productoSeleccionAEnviar = new CompraCliente();
+    private CompraCliente productoSeleccionACancelar = new CompraCliente();
 
     private String navegarPaginas = "entregar.xhtml";
 
@@ -31,7 +34,7 @@ public class OperadorBean implements Serializable {
     }
 
     public void obtieneProductosUsuarioActivo() {
-        
+
         for (CompraCliente prodComCli : this.clienteBean.getListaTodosProductosComprados()) {
             if (prodComCli.getIdOperador()
                     .equals(this.usuarioBean.getUsuarioActivoOperador().getId())) {
@@ -39,9 +42,35 @@ public class OperadorBean implements Serializable {
                 if (prodComCli.getEstadoCompra().equals("Pendiente")) {
                     this.listaProductosOperadorActivo.add(prodComCli);
                 }
-
             }
         }
+
+        this.obtenerTodosLosProductos();
+        this.mostrarProductosEnviados();
+    }
+
+    public void obtenerTodosLosProductos() {
+
+        this.listaTodosLosProductosEsteUsuario.clear();
+
+        for (CompraCliente prodComCli : this.clienteBean.getListaTodosProductosComprados()) {
+            if (prodComCli.getIdOperador()
+                    .equals(this.usuarioBean.getUsuarioActivoOperador().getId())) {
+                this.listaTodosLosProductosEsteUsuario.add(prodComCli);
+            }
+        }
+    }
+
+    public void mostrarProductosEnviados() {
+
+        this.listaProductosEnviados.clear();
+
+        for (CompraCliente proEnviados : this.clienteBean.getListaTodosProductosComprados()) {
+            if (proEnviados.getEstadoCompra().equals("Enviado")) {
+                listaProductosEnviados.add(proEnviados);
+            }
+        }
+
     }
 
     public void enviarProductoAcliente(CompraCliente comCliProducto) {
@@ -62,7 +91,6 @@ public class OperadorBean implements Serializable {
 
         if (productoModiCatalogo.getCantidadAlmacenamiento() == 0) {
             MensajesAlertas.showError("Producto agotado", "Este producto esta agotado");
-            this.cancelarProductoCliente(this.productoSeleccionAEnviar, "Producto agotado");
             return;
         }
 
@@ -74,7 +102,7 @@ public class OperadorBean implements Serializable {
 
         // Detalle de venta
         this.productoSeleccionAEnviar.setEstadoCompra("Enviado");
-        this.productoSeleccionAEnviar.setFechaConfirmacion(this.clienteBean.saberFechaActual());
+        this.productoSeleccionAEnviar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
         // Cambiar disponibilidad del producto si ya se vendio todo
         productoModiCatalogo.setDisponibilidad(false);
@@ -85,18 +113,34 @@ public class OperadorBean implements Serializable {
         // Guardar el detalle de compra del cliente
         this.clienteBean.getListaTodosProductosComprados().set(posicionPCC, this.productoSeleccionAEnviar);
 
+        this.productoSeleccionAEnviar = new CompraCliente();
+        this.productoSeleccionACancelar = new CompraCliente();
+
+        // Limpiamos la lista de los usuarios para luego volverla a llenar con los que no esten cancelados
+        this.listaProductosOperadorActivo.clear();
+
+        this.obtieneProductosUsuarioActivo();
+
     }
 
-    public void cancelarProductoCliente(CompraCliente comCliProducto, String estadoProducto) {
+    public void onAbrirModalCancelarProducto(CompraCliente comCliProducto) {
+        this.productoSeleccionACancelar = comCliProducto;
+        PrimeFaces.current().executeScript("PF('dlg3').show();");
+    }
 
-        int posicionPCC = this.clienteBean.getListaTodosProductosComprados().indexOf(comCliProducto);
+    public void cancelarProductoCliente() {
+
+        int posicionPCC = this.clienteBean.getListaTodosProductosComprados().indexOf(this.productoSeleccionACancelar);
 
         CompraCliente prodCliACancelar = this.clienteBean.getListaTodosProductosComprados().get(posicionPCC);
 
-        prodCliACancelar.setEstadoCompra(estadoProducto);
-        prodCliACancelar.setFechaConfirmacion(this.clienteBean.saberFechaActual());
+        prodCliACancelar.setEstadoCompra(this.productoSeleccionACancelar.getEstadoCompra());
+        prodCliACancelar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
-        this.clienteBean.getListaTodosProductosComprados().set(posicionPCC, comCliProducto);
+        this.clienteBean.getListaTodosProductosComprados().set(posicionPCC, this.productoSeleccionACancelar);
+
+        this.productoSeleccionACancelar = new CompraCliente();
+        this.productoSeleccionAEnviar = new CompraCliente();
 
         // Limpiamos la lista de los usuarios para luego volverla a llenar con los que no esten cancelados
         this.listaProductosOperadorActivo.clear();
@@ -129,8 +173,40 @@ public class OperadorBean implements Serializable {
         return listaProductosOperadorActivo;
     }
 
+    public List<CompraCliente> getListaTodosLosProductosEsteUsuario() {
+        return listaTodosLosProductosEsteUsuario;
+    }
+
+    public List<CompraCliente> getListaProductosEnviados() {
+        return listaProductosEnviados;
+    }
+
+    public void setListaProductosEnviados(List<CompraCliente> listaProductosEnviados) {
+        this.listaProductosEnviados = listaProductosEnviados;
+    }
+
+    public void setListaTodosLosProductosEsteUsuario(List<CompraCliente> listaTodosLosProductosEsteUsuario) {
+        this.listaTodosLosProductosEsteUsuario = listaTodosLosProductosEsteUsuario;
+    }
+
     public void setListaProductosOperadorActivo(List<CompraCliente> listaProductosOperadorActivo) {
         this.listaProductosOperadorActivo = listaProductosOperadorActivo;
+    }
+
+    public CompraCliente getProductoSeleccionAEnviar() {
+        return productoSeleccionAEnviar;
+    }
+
+    public void setProductoSeleccionAEnviar(CompraCliente productoSeleccionAEnviar) {
+        this.productoSeleccionAEnviar = productoSeleccionAEnviar;
+    }
+
+    public CompraCliente getProductoSeleccionACancelar() {
+        return productoSeleccionACancelar;
+    }
+
+    public void setProductoSeleccionACancelar(CompraCliente productoSeleccionACancelar) {
+        this.productoSeleccionACancelar = productoSeleccionACancelar;
     }
 
 }

@@ -1,6 +1,5 @@
 package beans;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import modelos.*;
 import org.primefaces.PrimeFaces;
@@ -8,6 +7,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 
 @Named(value = "clienteBean")
 @SessionScoped
@@ -23,44 +23,45 @@ public class ClienteBean implements Serializable {
     private List<Producto> listaProductosSeleccionados = new ArrayList();
 
     private CompraCliente compraProducto = new CompraCliente();
-    private Producto productoSeleccionado = new Producto();
+    private Producto productoSeleccionadoAComprar = new Producto();
 
     public ClienteBean() {
     }
 
-    public void seleccionarProducto(Producto producto) {
-        if (this.listaProductosSeleccionados.contains(producto)) {
+    public void onSeleccionarProductoCatalogo(Producto prod) {
+
+        if (this.listaProductosSeleccionados.contains(prod)) {
             MensajesAlertas.showInfo("Producto ya seleccionado", "Ya seleccionaste este producto, primero termina la compra de este");
             return;
         }
 
-        this.listaProductosSeleccionados.add(producto);
+        this.listaProductosSeleccionados.add(prod);
 
         MensajesAlertas.showInfo("Seleccionaste un producto", "Producto seleccionado con exito");
 
     }
 
-    public void quitarProductoSeleccionado(Producto productoQ) {
-        this.listaProductosSeleccionados.remove(productoQ);
-        this.productoSeleccionado = new Producto();
-        this.compraProducto = new CompraCliente();
+    public void onModalCompletarCompra(Producto producto) {
+        this.productoSeleccionadoAComprar = producto;
+
+        PrimeFaces.current().executeScript("PF('dlg1').show();");
     }
 
-    public void comprarProductoSeleccionado() {
+    public void onCompletarCompraProducto() {
         if (!this.compraProducto.validarProducto()) {
-            PrimeFaces.current().executeScript("PF('dlg1').show();");
             MensajesAlertas.showError("Llena todos los campos", "Complete toda la información");
+            PrimeFaces.current().executeScript("PF('dlg1').show();");
             return;
         }
 
-        // Validar si el usuario ya compro este producto
         boolean validarSiProductoYaFueComprado = this.listaProductosCompradosUsuarioActivo
-                .stream().anyMatch(p -> p.getProductoComprado().getIdProducto().equals(this.productoSeleccionado.getIdProducto()));
+                .stream().anyMatch(p -> p.getProductoComprado().getIdProducto()
+                .equals(this.productoSeleccionadoAComprar.getIdProducto()));
 
         if (validarSiProductoYaFueComprado) {
 
-            int productoAcualizarTP = buscarPosicionElementoLista(this.listaTodosProductosComprados);
-            int productoAcualizarUA = buscarPosicionElementoLista(this.listaProductosCompradosUsuarioActivo);
+            int productoAcualizarTP = this.buscarPosicionProductoEnLista(this.listaTodosProductosComprados);
+            int productoAcualizarUA = this.buscarPosicionProductoEnLista(this.listaProductosCompradosUsuarioActivo);
 
             CompraCliente productoActualizarDatos = this.listaTodosProductosComprados.get(productoAcualizarTP);
 
@@ -70,8 +71,8 @@ public class ClienteBean implements Serializable {
 
             this.listaTodosProductosComprados.set(productoAcualizarTP, productoActualizarDatos);
             this.listaProductosCompradosUsuarioActivo.set(productoAcualizarUA, productoActualizarDatos);
-            this.listaProductosSeleccionados.remove(this.productoSeleccionado);
-            this.productoSeleccionado = new Producto();
+            this.listaProductosSeleccionados.remove(this.productoSeleccionadoAComprar);
+            this.productoSeleccionadoAComprar = new Producto();
             this.compraProducto = new CompraCliente();
 
             MensajesAlertas.showInfo("Compraste este producto", "Producto comprado con exito");
@@ -81,26 +82,26 @@ public class ClienteBean implements Serializable {
 
         this.compraProducto.setCantidadComprada(1);
         this.compraProducto.setEstadoCompra("Pendiente");
-        this.compraProducto.setFechaCompra(saberFechaActual());
-        this.compraProducto.setPrecioTotal(this.productoSeleccionado.getPrecio());
-        
-        // Usuario
-        this.productoSeleccionado.setUsuario(this.usuarioBean.getUsuarioActivoCliente());
-        this.compraProducto.setProductoComprado(this.productoSeleccionado);
-        
+        this.compraProducto.setFechaCompra(this.saberFechaActual());
+        this.compraProducto.setPrecioTotal(this.productoSeleccionadoAComprar.getPrecio());
+        this.compraProducto.setUsuario(this.usuarioBean.getUsuarioActivoCliente());
+        this.compraProducto.setProductoComprado(this.productoSeleccionadoAComprar);
+
         this.listaTodosProductosComprados.add(this.compraProducto);
         this.listaProductosCompradosUsuarioActivo.add(this.compraProducto);
-        this.listaProductosSeleccionados.remove(this.productoSeleccionado);
+        this.listaProductosSeleccionados.remove(this.productoSeleccionadoAComprar);
 
-        this.productoSeleccionado = new Producto();
+        this.productoSeleccionadoAComprar = new Producto();
         this.compraProducto = new CompraCliente();
+
+        MensajesAlertas.showInfo("Compraste este producto", "Producto comprado con exito");
 
     }
 
-    public int buscarPosicionElementoLista(List<CompraCliente> listaProductos) {
+    public int buscarPosicionProductoEnLista(List<CompraCliente> listaProductos) {
         for (int i = 0; i < listaProductos.size(); i++) {
             CompraCliente prodComp = listaProductos.get(i);
-            if (prodComp.getProductoComprado().getIdProducto().equals(this.productoSeleccionado.getIdProducto())) {
+            if (prodComp.getProductoComprado().getIdProducto().equals(this.productoSeleccionadoAComprar.getIdProducto())) {
                 return i;
             }
         }
@@ -108,11 +109,11 @@ public class ClienteBean implements Serializable {
         return -1;
     }
 
-    public void actualizarListaProductosCompradosPorXUsuario(Usuario user) {
+    public void actualizarListaProductosCompradosPorXUsuario() {
 
         for (CompraCliente proComByXUser : this.listaTodosProductosComprados) {
 
-            if (proComByXUser.getProductoComprado().getUsuario().getId()
+            if (proComByXUser.getUsuario().getId()
                     .equals(this.usuarioBean.getUsuarioActivoCliente().getId())) {
 
                 this.listaProductosCompradosUsuarioActivo.add(proComByXUser);
@@ -122,12 +123,10 @@ public class ClienteBean implements Serializable {
 
     }
 
-    public String saberMenuSeleccionado(String paginaActual) {
-        if (this.navegarPaginas.equals(paginaActual)) {
-            return "menu_seleccionado";
-        } else {
-            return "";
-        }
+    public void onQuitarProductoAComprar(Producto prodQuitar) {
+        this.listaProductosSeleccionados.remove(prodQuitar);
+
+        MensajesAlertas.showError("Quitaste un producto", "Quitaste este producto con exito");
     }
 
     public String saberFechaActual() {
@@ -138,10 +137,12 @@ public class ClienteBean implements Serializable {
         return formatoFechaHora.format(fechaHoraActual);
     }
 
-    public void abrirModalCompletarCompra(Producto producto) {
-        this.productoSeleccionado = producto;
-        
-        PrimeFaces.current().executeScript("PF('dlg1').show();");
+    public String saberMenuSeleccionado(String paginaActual) {
+        if (this.navegarPaginas.equals(paginaActual)) {
+            return "menu_seleccionado";
+        } else {
+            return "";
+        }
     }
 
     public void navegarEntrePaginasCliente(String pagina) {
@@ -172,12 +173,20 @@ public class ClienteBean implements Serializable {
         this.listaProductosCompradosUsuarioActivo = listaProductosCompradosUsuarioActivo;
     }
 
-    public Producto getProductoSeleccionado() {
-        return productoSeleccionado;
+    public UsuarioBean getUsuarioBean() {
+        return usuarioBean;
     }
 
-    public void setProductoSeleccionado(Producto productoSeleccionado) {
-        this.productoSeleccionado = productoSeleccionado;
+    public void setUsuarioBean(UsuarioBean usuarioBean) {
+        this.usuarioBean = usuarioBean;
+    }
+
+    public Producto getProductoSeleccionadoAComprar() {
+        return productoSeleccionadoAComprar;
+    }
+
+    public void setProductoSeleccionadoAComprar(Producto productoSeleccionadoAComprar) {
+        this.productoSeleccionadoAComprar = productoSeleccionadoAComprar;
     }
 
     public List<Producto> getListaProductosSeleccionados() {

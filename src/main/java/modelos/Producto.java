@@ -9,7 +9,6 @@ public class Producto {
     private String cantidad;
     private int cantidadAlmacenamiento;
     private boolean disponibilidad;
-    private Usuario usuario;
 
     public Producto() {
     }
@@ -22,17 +21,6 @@ public class Producto {
         this.cantidad = cantidad;
         this.cantidadAlmacenamiento = cantidadAlmacenamiento;
         this.disponibilidad = disponibilidad;
-    }
-
-    public Producto(String idProducto, String nombreProducto, double precio, String tipo, String cantidad, int cantidadAlmacenamiento, boolean disponibilidad, Usuario usuario) {
-        this.idProducto = idProducto;
-        this.nombreProducto = nombreProducto;
-        this.precio = precio;
-        this.tipo = tipo;
-        this.cantidad = cantidad;
-        this.cantidadAlmacenamiento = cantidadAlmacenamiento;
-        this.disponibilidad = disponibilidad;
-        this.usuario = usuario;
     }
 
     public String getIdProducto() {
@@ -89,14 +77,6 @@ public class Producto {
 
     public void setDisponibilidad(boolean disponibilidad) {
         this.disponibilidad = disponibilidad;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
 }

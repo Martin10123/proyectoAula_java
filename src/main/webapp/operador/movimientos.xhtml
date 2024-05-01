@@ -2,24 +2,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Facelet Title</title>
     </h:head>
     <h:body>
-        <p:dataTable>
-            <p:column headerText="Code">
-                <h:outputText />
+        <p:dataTable value="#{operadorBean.listaTodosLosProductosEsteUsuario}" var="movProducto">
+            <p:column headerText="Nombre del producto">
+                <h:outputText value="#{movProducto.productoComprado.nombreProducto}" />
             </p:column>
-            <p:column headerText="Name">
-                <h:outputText />
+            <p:column headerText="Nombre del cliente">
+                <h:outputText value="#{movProducto.usuario.nombreCompleto}" />
             </p:column>
-            <p:column headerText="Category">
-                <h:outputText />
+            <p:column headerText="Dirección">
+                <h:outputText value="#{movProducto.direccionEnvio}" />
             </p:column>
-            <p:column headerText="Quantity">
-                <h:outputText />
+            <p:column headerText="Fecha de acción">
+                <h:outputText value="#{movProducto.fechaConfirmacion}" />
+            </p:column>
+            <p:column headerText="Acción tomada sobre el producto">
+                <h:outputText value="#{movProducto.estadoCompra}" />
             </p:column>
         </p:dataTable>
     </h:body>

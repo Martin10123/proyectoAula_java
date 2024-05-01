@@ -4,9 +4,11 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 import modelos.Producto;
 
 @Named(value = "catalogoBean")
@@ -46,6 +48,14 @@ public class CatalogoBean implements Serializable {
         this.listaProductos.add(produ12);
         this.listaProductos.add(produ13);
         this.listaProductos.add(produ14);
+    }
+    
+    public String saberFechaActual() {
+        Date fechaHoraActual = new Date();
+
+        SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy 'a las' h:mm a", new Locale("es", "CO"));
+
+        return formatoFechaHora.format(fechaHoraActual);
     }
 
     public String precioNormal(double precio) {

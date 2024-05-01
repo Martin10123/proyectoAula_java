@@ -10,11 +10,12 @@ public class CompraCliente {
     private String estadoCompra;
     private String descripcionProducto;
     private String idOperador;
+    private Usuario usuario;
 
     public CompraCliente() {
     }
 
-    public CompraCliente(Producto productoComprado, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador) {
+    public CompraCliente(Producto productoComprado, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario usuario) {
         this.productoComprado = productoComprado;
         this.cantidadComprada = cantidadComprada;
         this.precioTotal = precioTotal;
@@ -24,6 +25,7 @@ public class CompraCliente {
         this.estadoCompra = estadoCompra;
         this.descripcionProducto = descripcionProducto;
         this.idOperador = idOperador;
+        this.usuario = usuario;
     }
     
     public boolean validarDireccion() {
@@ -109,6 +111,14 @@ public class CompraCliente {
         this.idOperador = idOperador;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
     @Override
     public String toString() {
         return "CompraCliente{" + "productoComprado=" + productoComprado + ", cantidadComprada=" + cantidadComprada + ", precioTotal=" + precioTotal + ", fechaCompra=" + fechaCompra + ", fechaConfirmacion=" + fechaConfirmacion + ", direccionEnvio=" + direccionEnvio + ", estadoCompra=" + estadoCompra + ", descripcionProducto=" + descripcionProducto + ", idOperador=" + idOperador + '}';
