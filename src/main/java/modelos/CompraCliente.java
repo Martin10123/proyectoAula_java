@@ -1,6 +1,7 @@
 package modelos;
 
 public class CompraCliente {
+    private String idCompraCliente;
     private Producto productoComprado;
     private int cantidadComprada;
     private double precioTotal;
@@ -15,7 +16,8 @@ public class CompraCliente {
     public CompraCliente() {
     }
 
-    public CompraCliente(Producto productoComprado, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario usuario) {
+    public CompraCliente(String idCompraCliente, Producto productoComprado, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario usuario) {
+        this.idCompraCliente = idCompraCliente;
         this.productoComprado = productoComprado;
         this.cantidadComprada = cantidadComprada;
         this.precioTotal = precioTotal;
@@ -37,6 +39,14 @@ public class CompraCliente {
                 && descripcionProducto != null && !descripcionProducto.isEmpty()
                 && idOperador != null && !idOperador.isEmpty()
                 ;
+    }
+
+    public String getIdCompraCliente() {
+        return idCompraCliente;
+    }
+
+    public void setIdCompraCliente(String idCompraCliente) {
+        this.idCompraCliente = idCompraCliente;
     }
 
     public Producto getProductoComprado() {
