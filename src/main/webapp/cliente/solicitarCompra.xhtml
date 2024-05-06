@@ -38,7 +38,11 @@
 
                         <f:facet name="footer">
                             <div class="footer_btns">
-                                <h:commandButton actionListener="#{clienteBean.onModalCompletarCompra(produSeleccionado)}" class="btn btn-primary" value="Comprar" />
+                                <ui:repeat class="btn btn-primary" value="#{usuarioBean.listTodosOperadores}" var="opera">
+                                    <div class="lista_operadores">
+                                        <h:commandButton actionListener="#{clienteBean.onModalCompletarCompra(produSeleccionado, opera)}" class="btn btn-primary" style="width: 100%" value="#{opera.nombreCompleto}" />
+                                    </div>
+                                </ui:repeat>
                                 <h:commandButton actionListener="#{clienteBean.onQuitarProductoAComprar(produSeleccionado)}" class="btn btn-red" value="Quitar" />
                             </div>
                         </f:facet>
@@ -54,7 +58,7 @@
 
                     <div class="contiene_input">
                         <p:outputLabel value="Nombe" />
-                        <p:inputText disabled="true" autocomplete="false" placeholder="Nombre..." value="#{usuarioBean.usuarioActivoCliente.nombreCompleto}" />
+                        <p:inputText disabled="true" autocomplete="false" placeholder="Nombre..." value="#{usuarioBean.usuarioActivo.nombreCompleto}" />
                     </div>
 
                     <div class="contiene_input">
@@ -65,15 +69,6 @@
                     <div class="contiene_input">
                         <p:outputLabel value="Descripción" />
                         <p:inputTextarea style="max-height: 8rem" placeholder="Descripción..." value="#{clienteBean.compraProducto.descripcionProducto}"  />
-                    </div>
-
-                    <div class="contiene_input">
-                        <p:outputLabel value="Elegir operador" />
-                        <p:selectOneMenu value="#{clienteBean.compraProducto.idOperador}">
-                            <f:selectItem itemLabel="Select One" itemValue=""/>
-                            <f:selectItems value="#{usuarioBean.listTodosOperadores}" var="itemOperador"
-                                           itemLabel="#{itemOperador.nombreCompleto}" itemValue="#{itemOperador.id}" />
-                        </p:selectOneMenu>
                     </div>
 
                     <h:commandButton actionListener="#{clienteBean.onCompletarCompraProducto()}" class="btn btn-primary" value="Completar" />

@@ -2,25 +2,27 @@ package modelos;
 
 public class Usuario {
 
-    private String id;
+    private Long idUsuario;
     private String nombreCompleto;
     private String tipoUsuario;
     private String email;
     private String password;
     private String direccion;
     private String telefono;
+    private String categoria;
 
     public Usuario() {
     }
 
-    public Usuario(String id, String nombreCompleto, String tipoUsuario, String email, String password, String direccion, String telefono) {
-        this.id = id;
+    public Usuario(Long idUsuario, String nombreCompleto, String tipoUsuario, String email, String password, String direccion, String telefono, String categoria) {
+        this.idUsuario = idUsuario;
         this.nombreCompleto = nombreCompleto;
         this.tipoUsuario = tipoUsuario;
         this.email = email;
         this.password = password;
         this.direccion = direccion;
         this.telefono = telefono;
+        this.categoria = categoria;
     }
 
     public boolean validarUsuario() {
@@ -36,12 +38,12 @@ public class Usuario {
                 && password != null && !password.isEmpty();
     }
 
-    public String getId() {
-        return id;
+    public Long getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public String getNombreCompleto() {
@@ -90,6 +92,19 @@ public class Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "idUsuario=" + idUsuario + ", nombreCompleto=" + nombreCompleto + ", tipoUsuario=" + tipoUsuario + ", email=" + email + ", password=" + password + ", direccion=" + direccion + ", telefono=" + telefono + ", categoria=" + categoria + '}';
     }
 
 }

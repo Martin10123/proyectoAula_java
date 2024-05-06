@@ -8,6 +8,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import services.CompraClienteServices;
 
 @Named(value = "clienteBean")
 @SessionScoped
@@ -16,6 +17,8 @@ public class ClienteBean implements Serializable {
     @Inject
     private UsuarioBean usuarioBean;
 
+    private final CompraClienteServices operadorServices = new CompraClienteServices();
+
     private String navegarPaginas = "catalogo.xhtml";
 
     private List<CompraCliente> listaTodosProductosComprados = new ArrayList();
@@ -23,103 +26,80 @@ public class ClienteBean implements Serializable {
     private List<Producto> listaProductosSeleccionados = new ArrayList();
 
     private CompraCliente compraProducto = new CompraCliente();
+    private Usuario opeSele = new Usuario();
+
     private Producto productoSeleccionadoAComprar = new Producto();
+    private Producto productoSeleccionadoCatalogo = new Producto();
 
     public ClienteBean() {
     }
 
     public void onSeleccionarProductoCatalogo(Producto prod) {
 
-        if (this.listaProductosSeleccionados.contains(prod)) {
-            MensajesAlertas.showInfo("Producto ya seleccionado", "Ya seleccionaste este producto, primero termina la compra de este");
-            return;
-        }
+        this.productoSeleccionadoCatalogo = prod;
 
-        this.listaProductosSeleccionados.add(prod);
-
-        MensajesAlertas.showInfo("Seleccionaste un producto", "Producto seleccionado con exito");
+        PrimeFaces.current().executeScript("PF('cantidadProdu').show();");
 
     }
 
-    public void onModalCompletarCompra(Producto producto) {
+    public List<Integer> cantidadAComprarProductoCatalogo() {
+        List<Integer> cantidadDisponible = new ArrayList<>();
+
+        for (int i = 1; i <= this.productoSeleccionadoCatalogo.getCantidadAlmacenamiento(); i++) {
+            cantidadDisponible.add(i);
+        }
+
+        return cantidadDisponible;
+    }
+
+    public void onCompletarSeleccionProduCatalogo() {
+
+        this.listaProductosSeleccionados.add(this.productoSeleccionadoCatalogo);
+
+        MensajesAlertas.showInfo("", "Seleccionaste este producto");
+    }
+
+    public void onModalCompletarCompra(Producto producto, Usuario operaSele) {
         this.productoSeleccionadoAComprar = producto;
+        opeSele = operaSele;
 
         PrimeFaces.current().executeScript("PF('dlg1').show();");
     }
 
     public void onCompletarCompraProducto() {
+
         if (!this.compraProducto.validarProducto()) {
             MensajesAlertas.showError("Llena todos los campos", "Complete toda la información");
             PrimeFaces.current().executeScript("PF('dlg1').show();");
             return;
         }
 
-        boolean validarSiProductoYaFueComprado = this.listaProductosCompradosUsuarioActivo
-                .stream().anyMatch(p -> p.getProductoComprado().getIdProducto()
-                .equals(this.productoSeleccionadoAComprar.getIdProducto()));
-
-        if (validarSiProductoYaFueComprado) {
-
-            int productoAcualizarTP = this.buscarPosicionProductoEnLista(this.listaTodosProductosComprados);
-            int productoAcualizarUA = this.buscarPosicionProductoEnLista(this.listaProductosCompradosUsuarioActivo);
-
-            CompraCliente productoActualizarDatos = this.listaTodosProductosComprados.get(productoAcualizarTP);
-
-            productoActualizarDatos.setCantidadComprada(productoActualizarDatos.getCantidadComprada() + 1);
-            // Multiplicamos la cantidad de veces que compraron el producto por el precio unitario del producto
-            productoActualizarDatos.setPrecioTotal(productoActualizarDatos.getCantidadComprada() * productoActualizarDatos.getProductoComprado().getPrecio());
-
-            this.listaTodosProductosComprados.set(productoAcualizarTP, productoActualizarDatos);
-            this.listaProductosCompradosUsuarioActivo.set(productoAcualizarUA, productoActualizarDatos);
-            this.listaProductosSeleccionados.remove(this.productoSeleccionadoAComprar);
-            this.productoSeleccionadoAComprar = new Producto();
-            this.compraProducto = new CompraCliente();
-
-            MensajesAlertas.showInfo("Compraste este producto", "Producto comprado con exito");
-            return;
-
-        }
-
-        this.compraProducto.setCantidadComprada(1);
+        this.compraProducto.setIdCompraCliente(new Random().nextLong());
         this.compraProducto.setEstadoCompra("Pendiente");
         this.compraProducto.setFechaCompra(this.saberFechaActual());
-        this.compraProducto.setPrecioTotal(this.productoSeleccionadoAComprar.getPrecio());
-        this.compraProducto.setUsuario(this.usuarioBean.getUsuarioActivoCliente());
-        this.compraProducto.setProductoComprado(this.productoSeleccionadoAComprar);
+        this.compraProducto.setPrecioTotal(this.productoSeleccionadoAComprar.getPrecio() * this.compraProducto.getCantidadComprada());
+        this.compraProducto.setCliente(this.usuarioBean.getUsuarioActivo());
+        this.compraProducto.setProducto(this.productoSeleccionadoAComprar);
+        this.compraProducto.setOperador(this.opeSele);
 
-        this.listaTodosProductosComprados.add(this.compraProducto);
-        this.listaProductosCompradosUsuarioActivo.add(this.compraProducto);
-        this.listaProductosSeleccionados.remove(this.productoSeleccionadoAComprar);
+        boolean seGuardoCorrectamente = this.operadorServices.guardarDetalleVenta(this.compraProducto);
 
-        this.productoSeleccionadoAComprar = new Producto();
-        this.compraProducto = new CompraCliente();
+        if (seGuardoCorrectamente) {
+            this.listaProductosCompradosUsuarioActivo.add(compraProducto);
+            this.listaProductosSeleccionados.remove(this.productoSeleccionadoAComprar);
 
-        MensajesAlertas.showInfo("Compraste este producto", "Producto comprado con exito");
+            this.productoSeleccionadoAComprar = new Producto();
+            this.compraProducto = new CompraCliente();
+            MensajesAlertas.showInfo("Compraste este producto", "Producto comprado con exito");
+        } else {
+            MensajesAlertas.showError("Error al comprar el producto", "Producto no fue comprado con exito");
+        }
 
     }
 
-    public int buscarPosicionProductoEnLista(List<CompraCliente> listaProductos) {
-        for (int i = 0; i < listaProductos.size(); i++) {
-            CompraCliente prodComp = listaProductos.get(i);
-            if (prodComp.getProductoComprado().getIdProducto().equals(this.productoSeleccionadoAComprar.getIdProducto())) {
-                return i;
-            }
-        }
+    public void obtenerComprasClienteActivo(Long id) {
 
-        return -1;
-    }
-
-    public void actualizarListaProductosCompradosPorXUsuario() {
-
-        for (CompraCliente proComByXUser : this.listaTodosProductosComprados) {
-
-            if (proComByXUser.getUsuario().getId()
-                    .equals(this.usuarioBean.getUsuarioActivoCliente().getId())) {
-
-                this.listaProductosCompradosUsuarioActivo.add(proComByXUser);
-            }
-
-        }
+        this.listaProductosCompradosUsuarioActivo = operadorServices.obtenerCompraDetalleDeUnUsuario(id);
 
     }
 
@@ -203,6 +183,14 @@ public class ClienteBean implements Serializable {
 
     public void setCompraProducto(CompraCliente compraProducto) {
         this.compraProducto = compraProducto;
+    }
+
+    public Producto getProductoSeleccionadoCatalogo() {
+        return productoSeleccionadoCatalogo;
+    }
+
+    public void setProductoSeleccionadoCatalogo(Producto productoSeleccionadoCatalogo) {
+        this.productoSeleccionadoCatalogo = productoSeleccionadoCatalogo;
     }
 
 }

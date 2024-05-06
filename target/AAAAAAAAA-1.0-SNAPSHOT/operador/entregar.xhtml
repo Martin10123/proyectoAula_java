@@ -19,9 +19,10 @@
                         <p:graphicImage class="card_img" name="imagenes/image2.jpg" />
                     </f:facet>
                     <f:facet name="title">
-                        #{producto.productoComprado.nombreProducto}
+                        #{producto.producto.nombreProducto}
                     </f:facet>
 
+                    <p><span class="subtitulo_item">Cantidad comprada:</span> #{producto.cantidadComprada}</p>
                     <p><span class="subtitulo_item">Precio:</span> $#{catalogoBean.precioNormal(producto.precioTotal)}</p>
                     <p><span class="subtitulo_item">Fecha de solicitud:</span> #{producto.fechaCompra}</p>
                     <p><span class="subtitulo_item">Dirección:</span> #{producto.direccionEnvio}</p>
@@ -32,15 +33,15 @@
 
                         <p class="info_item">
                             <i class="pi pi-user" style="font-size: 1.1rem"></i>
-                            #{producto.usuario.nombreCompleto}
+                            #{producto.cliente.nombreCompleto}
                         </p>
                         <p class="info_item">
                             <i class="pi pi-tablet" style="font-size: 1.1rem"></i>
-                            #{producto.usuario.telefono}
+                            #{producto.cliente.telefono}
                         </p>
                         <p class="info_item">
                             <i class="pi pi-at" style="font-size: 1.1rem"></i>
-                            #{producto.usuario.email}
+                            #{producto.cliente.email}
                         </p>
                     </div>
 

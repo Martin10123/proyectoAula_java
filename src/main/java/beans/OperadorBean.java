@@ -9,6 +9,8 @@ import java.util.List;
 import modelos.CompraCliente;
 import modelos.Producto;
 import org.primefaces.PrimeFaces;
+import services.CatalogoServices;
+import services.CompraClienteServices;
 
 @Named(value = "operadorBean")
 @SessionScoped
@@ -20,6 +22,10 @@ public class OperadorBean implements Serializable {
     private ClienteBean clienteBean;
     @Inject
     private CatalogoBean catalogoBean;
+
+    private CatalogoServices catalogoServices = new CatalogoServices();
+    
+    private CompraClienteServices operadorServices = new CompraClienteServices();
 
     private List<CompraCliente> listaProductosOperadorActivo = new ArrayList<>();
     private List<CompraCliente> listaTodosLosProductosEsteUsuario = new ArrayList<>();
@@ -33,20 +39,12 @@ public class OperadorBean implements Serializable {
     public OperadorBean() {
     }
 
-    public void obtieneProductosUsuarioActivo() {
+    public void obtieneProductosOperadorActivo(Long id) {
 
-        for (CompraCliente prodComCli : this.clienteBean.getListaTodosProductosComprados()) {
-            if (prodComCli.getIdOperador()
-                    .equals(this.usuarioBean.getUsuarioActivoOperador().getId())) {
+        this.listaProductosOperadorActivo = this.operadorServices.obtenerCompraDetalleDeUnUsuario(id);
 
-                if (prodComCli.getEstadoCompra().equals("Pendiente")) {
-                    this.listaProductosOperadorActivo.add(prodComCli);
-                }
-            }
-        }
-
-        this.obtenerTodosLosProductos();
-        this.mostrarProductosVendidos();
+//        this.obtenerTodosLosProductos();
+//        this.mostrarProductosVendidos();
     }
 
     public void obtenerTodosLosProductos() {
@@ -54,8 +52,8 @@ public class OperadorBean implements Serializable {
         this.listaTodosLosProductosEsteUsuario.clear();
 
         for (CompraCliente prodComCli : this.clienteBean.getListaTodosProductosComprados()) {
-            if (prodComCli.getIdOperador()
-                    .equals(this.usuarioBean.getUsuarioActivoOperador().getId())) {
+            if (prodComCli.getOperador().getIdUsuario()
+                    .equals(this.usuarioBean.getUsuarioActivo().getIdUsuario())) {
                 this.listaTodosLosProductosEsteUsuario.add(prodComCli);
             }
         }
@@ -84,45 +82,28 @@ public class OperadorBean implements Serializable {
             return;
         }
 
-        int posicionProductoCatalogo = this.catalogoBean.getListaProductos()
-                .indexOf(this.productoSeleccionAEnviar.getProductoComprado());
+        Producto productoModiCatalogo = this.catalogoServices.obtenerProducto(this.productoSeleccionAEnviar.getProducto().getIdProducto());
 
-        Producto productoModiCatalogo = this.catalogoBean.getListaProductos().get(posicionProductoCatalogo);
-
-        if (this.productoSeleccionAEnviar.getProductoComprado().getCantidadAlmacenamiento() == 0
+        if (this.productoSeleccionAEnviar.getProducto().getCantidadAlmacenamiento() == 0
                 || productoModiCatalogo.getCantidadAlmacenamiento() < this.productoSeleccionAEnviar.getCantidadComprada()) {
             MensajesAlertas.showWarn("Producto agotado", "Este producto esta agotado o no hay la cantidad solicitada, revise el catalogo y luego cancele el pedido explicando el motivo");
             return;
         }
 
-        // Producto del catalogo
         productoModiCatalogo.setCantidadAlmacenamiento(productoModiCatalogo.getCantidadAlmacenamiento() - this.productoSeleccionAEnviar.getCantidadComprada());
 
-        // Buscamos la posicion de este detalle en la lista de los productos comprados
-        int posicionPCC = this.clienteBean.getListaTodosProductosComprados().indexOf(this.productoSeleccionAEnviar);
-
-        // Detalle de venta
         this.productoSeleccionAEnviar.setEstadoCompra("Vendido");
         this.productoSeleccionAEnviar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
-        // Cambiar disponibilidad del producto si ya se vendio todo
         if (productoModiCatalogo.getCantidadAlmacenamiento() == 0) {
             productoModiCatalogo.setDisponibilidad(false);
         }
 
-        // Guardar el producto del catalogo que compraron
-        this.catalogoBean.getListaProductos().set(posicionProductoCatalogo, productoModiCatalogo);
-
-        // Guardar el detalle de compra del cliente
-        this.clienteBean.getListaTodosProductosComprados().set(posicionPCC, this.productoSeleccionAEnviar);
+        this.catalogoServices.actualizarProducto(productoModiCatalogo);
+        this.operadorServices.actualizarDetalleCompra(productoSeleccionAEnviar);
 
         this.productoSeleccionAEnviar = new CompraCliente();
         this.productoSeleccionACancelar = new CompraCliente();
-
-        // Limpiamos la lista de los usuarios para luego volverla a llenar con los que no esten cancelados
-        this.listaProductosOperadorActivo.clear();
-
-        this.obtieneProductosUsuarioActivo();
 
     }
 
@@ -133,22 +114,15 @@ public class OperadorBean implements Serializable {
 
     public void cancelarProductoCliente() {
 
-        int posicionPCC = this.clienteBean.getListaTodosProductosComprados().indexOf(this.productoSeleccionACancelar);
-
-        CompraCliente prodCliACancelar = this.clienteBean.getListaTodosProductosComprados().get(posicionPCC);
+        CompraCliente prodCliACancelar = this.operadorServices.obtenerUnaCompraDetalle(this.productoSeleccionACancelar.getIdCompraCliente());
 
         prodCliACancelar.setEstadoCompra(this.productoSeleccionACancelar.getEstadoCompra());
         prodCliACancelar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
-        this.clienteBean.getListaTodosProductosComprados().set(posicionPCC, this.productoSeleccionACancelar);
+        this.operadorServices.actualizarDetalleCompra(prodCliACancelar);
 
         this.productoSeleccionACancelar = new CompraCliente();
         this.productoSeleccionAEnviar = new CompraCliente();
-
-        // Limpiamos la lista de los usuarios para luego volverla a llenar con los que no esten cancelados
-        this.listaProductosOperadorActivo.clear();
-
-        this.obtieneProductosUsuarioActivo();
 
     }
 

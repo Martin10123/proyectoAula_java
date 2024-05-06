@@ -9,10 +9,10 @@
     <h:body>
         <p:dataTable value="#{operadorBean.listaTodosLosProductosEsteUsuario}" var="movProducto">
             <p:column headerText="Nombre del producto">
-                <h:outputText value="#{movProducto.productoComprado.nombreProducto}" />
+                <h:outputText value="#{movProducto.producto.nombreProducto}" />
             </p:column>
             <p:column headerText="Nombre del cliente">
-                <h:outputText value="#{movProducto.usuario.nombreCompleto}" />
+                <h:outputText value="#{movProducto.cliente.nombreCompleto}" />
             </p:column>
             <p:column headerText="Dirección">
                 <h:outputText value="#{movProducto.direccionEnvio}" />
@@ -22,6 +22,12 @@
             </p:column>
             <p:column headerText="Acción tomada sobre el producto">
                 <h:outputText value="#{movProducto.estadoCompra}" />
+            </p:column>
+            <p:column headerText="Cantidad comprada">
+                <h:outputText value="#{movProducto.cantidadComprada}" />
+            </p:column>
+            <p:column headerText="Precio">
+                <h:outputText value="$#{catalogoBean.precioNormal(movProducto.precioTotal)}" />
             </p:column>
         </p:dataTable>
     </h:body>

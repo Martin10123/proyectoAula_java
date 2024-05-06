@@ -6,6 +6,7 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 import modelos.*;
+import services.UsuarioServices;
 
 @Named(value = "usuarioBean")
 @SessionScoped
@@ -17,15 +18,15 @@ public class UsuarioBean implements Serializable {
     @Inject
     private OperadorBean operadorBean;
 
-    private List<Usuario> listTodosUsuarios = new ArrayList<>();
-    private List<Cliente> listTodosClientes = new ArrayList<>();
-    private List<Operador> listTodosOperadores = new ArrayList<>();
+    private UsuarioServices usuarioServices = new UsuarioServices();
 
-    private Operador usuarioActivoOperador = new Operador();
-    private Cliente usuarioActivoCliente = new Cliente();
+    private List<Usuario> listTodosUsuarios = new ArrayList<>();
+    private List<Usuario> listTodosOperadores = new ArrayList<>();
+
+    private Usuario usuarioActivo = new Usuario();
 
     private Usuario usuarioIniciar = new Usuario();
-    private Cliente clienteRegistro = new Cliente();
+    private Usuario clienteRegistro = new Usuario();
 
     private boolean isUsuarioActivoNow = false;
     private String navegarPaginas = "iniciarSesion.xhtml";
@@ -34,22 +35,23 @@ public class UsuarioBean implements Serializable {
     public UsuarioBean() {
     }
 
-    public void generarUsuarios() {
-        this.listTodosOperadores = new ArrayList();
+    public void cargarUsuarios() {
+        this.listTodosUsuarios = new ArrayList<>();
+        
+        this.listTodosUsuarios = this.usuarioServices.obtenerUsuarios();
+    }
 
-        Operador operador1 = new Operador(0, 0, "Plantas", "carlos1", "Carlos Perez", "Operador", "carlos@gmail.com", "12345", "Direccion1", "3006543450");
-        Operador operador2 = new Operador(0, 0, "Plantas", "pedro1", "Pedro Rodriguez", "Operador", "pedro@gmail.com", "12345", "Direccion2", "3005674563");
-        Operador operador3 = new Operador(0, 0, "Semillas", "luis1", "Luis Carlos", "Operador", "luis@gmail.com", "12345", "Direccion3", "3005674456");
-        Operador operador4 = new Operador(0, 0, "Semillas", "daniel1", "Daniel Ramirez", "Operador", "daniel@gmail.com", "12345", "Direccion4", "3045774563");
+    public void obtenerListTodosOperadores() {
+        
+        this.listTodosOperadores = new ArrayList<>();
 
-        this.listTodosOperadores.add(operador1);
-        this.listTodosOperadores.add(operador2);
-        this.listTodosOperadores.add(operador3);
-        this.listTodosOperadores.add(operador4);
-        this.listTodosUsuarios.add(operador1);
-        this.listTodosUsuarios.add(operador2);
-        this.listTodosUsuarios.add(operador3);
-        this.listTodosUsuarios.add(operador4);
+        for (Usuario usuOpe : this.listTodosUsuarios) {
+
+            if (usuOpe.getTipoUsuario().equals("Operador")) {
+                this.listTodosOperadores.add(usuOpe);
+            }
+        }
+
     }
 
     public void registrarUsuarios() {
@@ -59,28 +61,23 @@ public class UsuarioBean implements Serializable {
             return;
         }
 
-        generarUsuarios();
-
-        if (this.verificarSiExisteEmail(this.clienteRegistro.getEmail())) {
-            MensajesAlertas.showError("", "Este email ya esta en uso");
-            return;
-        }
-
-        this.clienteRegistro.setId(UUID.randomUUID().toString());
         this.clienteRegistro.setTipoUsuario("Cliente");
-        this.clienteRegistro.setProductosComprados(0);
-        this.clienteRegistro.setCantidadInvertida(0);
-        this.listTodosUsuarios.add(this.clienteRegistro);
-        this.listTodosClientes.add((Cliente) this.clienteRegistro);
 
-        this.usuarioActivoCliente = this.clienteRegistro;
-        this.clienteRegistro = new Cliente();
+        // Guardar en base de datos
+        Usuario usuarioRegistrado = this.usuarioServices.registrarUsuario(this.clienteRegistro);
 
-        MensajesAlertas.showInfo("Registro exitoso", "Se registro correctamente");
+        if (usuarioRegistrado != null) {
+            this.usuarioActivo = usuarioRegistrado;
+            this.clienteRegistro = new Usuario();
 
-        this.isUsuarioActivoNow = true;
-        this.paginaActualCO = "cliente/menuCliente.xhtml";
+            this.cargarUsuarios();
+            this.obtenerListTodosOperadores();
 
+            this.isUsuarioActivoNow = true;
+            this.paginaActualCO = "cliente/menuCliente.xhtml";
+
+            MensajesAlertas.showInfo("Registro exitoso", "Se registro correctamente");
+        }
     }
 
     public void iniciarSesion() {
@@ -90,64 +87,35 @@ public class UsuarioBean implements Serializable {
             return;
         }
 
-        generarUsuarios();
+        Usuario usuarioEncontrado = this.usuarioServices.iniciarSesionUsuario(
+                this.usuarioIniciar.getEmail(), this.usuarioIniciar.getPassword());
 
-        boolean existeUsuario = false;
+        this.cargarUsuarios();
 
-        for (Usuario usuarioIni : listTodosUsuarios) {
-            if (usuarioIni.getEmail().equals(this.usuarioIniciar.getEmail())
-                    && usuarioIni.getPassword().equals(this.usuarioIniciar.getPassword())) {
-
-                this.usuarioIniciar = new Usuario();
-
-                if (usuarioIni.getTipoUsuario().equals("Cliente")) {
-                    this.usuarioActivoCliente = (Cliente) usuarioIni;
-                    this.paginaActualCO = "cliente/menuCliente.xhtml";
-                    this.clienteBean.actualizarListaProductosCompradosPorXUsuario();
-                } else {
-
-                    this.usuarioActivoOperador = (Operador) usuarioIni;
-                    this.paginaActualCO = "operador/operadorVentas.xhtml";
-                    this.operadorBean.obtieneProductosUsuarioActivo();
-                }
-
-                this.isUsuarioActivoNow = true;
-                existeUsuario = true;
+        if (usuarioEncontrado != null) {
+            this.isUsuarioActivoNow = true;
+            this.usuarioActivo = usuarioEncontrado;
+            
+            if (usuarioEncontrado.getTipoUsuario().equals("Cliente")) {
+                this.paginaActualCO = "cliente/menuCliente.xhtml";
+                this.obtenerListTodosOperadores();
+                this.clienteBean.obtenerComprasClienteActivo(usuarioEncontrado.getIdUsuario());
+            } else {
+                this.paginaActualCO = "operador/operadorVentas.xhtml";
+                this.operadorBean.obtieneProductosOperadorActivo(usuarioEncontrado.getIdUsuario());
             }
         }
-
-        if (!existeUsuario) {
-            MensajesAlertas.showWarn("Revise sus credenciales", "Revisa tu contraseña o email");
-        }
-
-    }
-
-    public String usuarioAConocerOperador(String idUsuario) {
-
-        Operador operador = null;
         
-        for (Operador ope : this.listTodosOperadores) {
-            if (ope.getId().equals(idUsuario)) {
-                operador = ope;
-                break;
-            }
-        }
-
-        return operador.getNombreCompleto();
+        this.usuarioIniciar = new Usuario();
 
     }
 
-    public boolean verificarSiExisteEmail(String emailAVerificar) {
+    public String usuarioAConocerOperador(Long idUsuario) {
 
-        boolean verificarEmail = false;
+        Usuario usuarioOperador = this.usuarioServices.obtenerUsuario(idUsuario);
 
-        for (Usuario usuario : listTodosUsuarios) {
-            if (usuario.getEmail().equals(emailAVerificar)) {
-                verificarEmail = true;
-            }
-        }
+        return usuarioOperador.getNombreCompleto();
 
-        return verificarEmail;
     }
 
     public void navegarEntrePaginasAuth(String pagina) {
@@ -156,8 +124,7 @@ public class UsuarioBean implements Serializable {
 
     public void cerrarSesion() {
         this.isUsuarioActivoNow = false;
-        this.usuarioActivoCliente = new Cliente();
-        this.usuarioActivoOperador = new Operador();
+        this.usuarioActivo = new Usuario();
         navegarEntrePaginasAuth("iniciarSesion.xhtml");
 
         //Cliente
@@ -178,36 +145,12 @@ public class UsuarioBean implements Serializable {
         this.listTodosUsuarios = listTodosUsuarios;
     }
 
-    public List<Cliente> getListTodosClientes() {
-        return listTodosClientes;
+    public Usuario getUsuarioActivo() {
+        return usuarioActivo;
     }
 
-    public void setListTodosClientes(List<Cliente> listTodosClientes) {
-        this.listTodosClientes = listTodosClientes;
-    }
-
-    public List<Operador> getListTodosOperadores() {
-        return listTodosOperadores;
-    }
-
-    public void setListTodosOperadores(List<Operador> listTodosOperadores) {
-        this.listTodosOperadores = listTodosOperadores;
-    }
-
-    public boolean isIsUsuarioActivoNow() {
-        return isUsuarioActivoNow;
-    }
-
-    public void setIsUsuarioActivoNow(boolean isUsuarioActivoNow) {
-        this.isUsuarioActivoNow = isUsuarioActivoNow;
-    }
-
-    public Cliente getClienteRegistro() {
-        return clienteRegistro;
-    }
-
-    public void setClienteRegistro(Cliente clienteRegistro) {
-        this.clienteRegistro = clienteRegistro;
+    public void setUsuarioActivo(Usuario usuarioActivo) {
+        this.usuarioActivo = usuarioActivo;
     }
 
     public Usuario getUsuarioIniciar() {
@@ -218,20 +161,12 @@ public class UsuarioBean implements Serializable {
         this.usuarioIniciar = usuarioIniciar;
     }
 
-    public Operador getUsuarioActivoOperador() {
-        return usuarioActivoOperador;
+    public boolean isIsUsuarioActivoNow() {
+        return isUsuarioActivoNow;
     }
 
-    public void setUsuarioActivoOperador(Operador usuarioActivoOperador) {
-        this.usuarioActivoOperador = usuarioActivoOperador;
-    }
-
-    public Cliente getUsuarioActivoCliente() {
-        return usuarioActivoCliente;
-    }
-
-    public void setUsuarioActivoCliente(Cliente usuarioActivoCliente) {
-        this.usuarioActivoCliente = usuarioActivoCliente;
+    public void setIsUsuarioActivoNow(boolean isUsuarioActivoNow) {
+        this.isUsuarioActivoNow = isUsuarioActivoNow;
     }
 
     public String getNavegarPaginas() {
@@ -250,4 +185,19 @@ public class UsuarioBean implements Serializable {
         this.paginaActualCO = paginaActualCO;
     }
 
+    public Usuario getClienteRegistro() {
+        return clienteRegistro;
+    }
+
+    public void setClienteRegistro(Usuario clienteRegistro) {
+        this.clienteRegistro = clienteRegistro;
+    }
+
+    public List<Usuario> getListTodosOperadores() {
+        return listTodosOperadores;
+    }
+
+    public void setListTodosOperadores(List<Usuario> listTodosOperadores) {
+        this.listTodosOperadores = listTodosOperadores;
+    }
 }

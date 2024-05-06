@@ -42,9 +42,9 @@
                                 Disponibilidad: #{producto.disponibilidad ? 'Disponible' : 'Agotoda'}
                             </li>
                         </ul>
-
+                        
                         <f:facet name="footer">
-                            <div class="footer_btns">
+                            <div class="footer_btns" style="display: #{producto.disponibilidad ? 'flex' : 'none'}">
                                 <h:commandButton actionListener="#{clienteBean.onSeleccionarProductoCatalogo(producto)}" class="btn-primary" value="Elegir" />
                             </div>
                         </f:facet>
@@ -52,6 +52,24 @@
                 </ui:repeat>
 
             </div>
+
+            <p:dialog header="Cuantos vas a comprar?" widgetVar="cantidadProdu" minHeight="40" width="350" showEffect="fade" modal="true">
+
+                <div class="modal_contenedor">
+
+                    <div class="contiene_input">
+                        <p:outputLabel value="Cantidad a comprar" />
+                        <p:selectOneMenu value="#{clienteBean.compraProducto.cantidadComprada}">
+                            <f:selectItems value="#{clienteBean.cantidadAComprarProductoCatalogo()}" var="prod"
+                                           itemLabel="#{prod}" itemValue="#{prod}" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <h:commandButton actionListener="#{clienteBean.onCompletarSeleccionProduCatalogo()}" class="btn btn-primary" value="Completar" />
+
+                </div>
+
+            </p:dialog>
 
         </article>
 

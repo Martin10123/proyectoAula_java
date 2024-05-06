@@ -1,8 +1,7 @@
 package modelos;
 
 public class CompraCliente {
-    private String idCompraCliente;
-    private Producto productoComprado;
+    private Long idCompraCliente;
     private int cantidadComprada;
     private double precioTotal;
     private String fechaCompra;
@@ -11,14 +10,15 @@ public class CompraCliente {
     private String estadoCompra;
     private String descripcionProducto;
     private String idOperador;
-    private Usuario usuario;
+    private Usuario operador;
+    private Usuario cliente;
+    private Producto producto;
 
     public CompraCliente() {
     }
 
-    public CompraCliente(String idCompraCliente, Producto productoComprado, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario usuario) {
+    public CompraCliente(Long idCompraCliente, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario operador, Usuario cliente, Producto producto) {
         this.idCompraCliente = idCompraCliente;
-        this.productoComprado = productoComprado;
         this.cantidadComprada = cantidadComprada;
         this.precioTotal = precioTotal;
         this.fechaCompra = fechaCompra;
@@ -27,7 +27,9 @@ public class CompraCliente {
         this.estadoCompra = estadoCompra;
         this.descripcionProducto = descripcionProducto;
         this.idOperador = idOperador;
-        this.usuario = usuario;
+        this.operador = operador;
+        this.cliente = cliente;
+        this.producto = producto;
     }
     
     public boolean validarDireccion() {
@@ -36,25 +38,15 @@ public class CompraCliente {
     
     public boolean validarProducto() {
         return direccionEnvio != null && !direccionEnvio.isEmpty()
-                && descripcionProducto != null && !descripcionProducto.isEmpty()
-                && idOperador != null && !idOperador.isEmpty()
-                ;
+                && descripcionProducto != null && !descripcionProducto.isEmpty();
     }
 
-    public String getIdCompraCliente() {
+    public Long getIdCompraCliente() {
         return idCompraCliente;
     }
 
-    public void setIdCompraCliente(String idCompraCliente) {
+    public void setIdCompraCliente(Long idCompraCliente) {
         this.idCompraCliente = idCompraCliente;
-    }
-
-    public Producto getProductoComprado() {
-        return productoComprado;
-    }
-
-    public void setProductoComprado(Producto productoComprado) {
-        this.productoComprado = productoComprado;
     }
 
     public int getCantidadComprada() {
@@ -113,6 +105,30 @@ public class CompraCliente {
         this.descripcionProducto = descripcionProducto;
     }
 
+    public Usuario getOperador() {
+        return operador;
+    }
+
+    public void setOperador(Usuario operador) {
+        this.operador = operador;
+    }
+
+    public Usuario getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Usuario cliente) {
+        this.cliente = cliente;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
     public String getIdOperador() {
         return idOperador;
     }
@@ -121,17 +137,8 @@ public class CompraCliente {
         this.idOperador = idOperador;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-    
     @Override
     public String toString() {
-        return "CompraCliente{" + "productoComprado=" + productoComprado + ", cantidadComprada=" + cantidadComprada + ", precioTotal=" + precioTotal + ", fechaCompra=" + fechaCompra + ", fechaConfirmacion=" + fechaConfirmacion + ", direccionEnvio=" + direccionEnvio + ", estadoCompra=" + estadoCompra + ", descripcionProducto=" + descripcionProducto + ", idOperador=" + idOperador + '}';
+        return "CompraCliente{" + "idCompraCliente=" + idCompraCliente + ", cantidadComprada=" + cantidadComprada + ", precioTotal=" + precioTotal + ", fechaCompra=" + fechaCompra + ", fechaConfirmacion=" + fechaConfirmacion + ", direccionEnvio=" + direccionEnvio + ", estadoCompra=" + estadoCompra + ", descripcionProducto=" + descripcionProducto + ", idOperador=" + idOperador + ", operador=" + operador + ", cliente=" + cliente + ", producto=" + producto + '}';
     }
-    
 }
