@@ -62,12 +62,18 @@ public class CompraClienteServices {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            jsonb = JsonbBuilder.create();
+            if (response.statusCode() == 200) {
+                jsonb = JsonbBuilder.create();
 
-            listaDetalleCompra = jsonb.fromJson(response.body(), new ArrayList<CompraCliente>() {
-            }.getClass().getGenericSuperclass());
+                listaDetalleCompra = jsonb.fromJson(response.body(), new ArrayList<CompraCliente>() {
+                }.getClass().getGenericSuperclass());
 
-            return listaDetalleCompra;
+                return listaDetalleCompra;
+            } else {
+                System.err.println("Error al obtener detalle de venta. Código de respuesta: " + response.headers());
+                System.err.println("Error al obtener detalle de venta. Código de respuesta: " + response.headers().toString());
+                return null;
+            }
 
         } catch (Exception e) {
             Logger.getLogger(UsuarioServices.class.getName()).log(Level.SEVERE, null, e);
@@ -75,13 +81,13 @@ public class CompraClienteServices {
         }
     }
 
-    public List<CompraCliente> obtenerCompraDetalleDeUnUsuario(Long id) {
+    public List<CompraCliente> obtenerCompraDetalleDeUnUsuario(Long id, String urlTipo) {
 
         try {
 
             List<CompraCliente> listaDetalleCompraDeUnUsuario = new ArrayList<>();
-            
-            String url = Api.get_compras_cliente_de_un_usuario + id + "/usuario";
+
+            String url = Api.get_compras_cliente_de_un_usuario + "/" + id + "/" + urlTipo;
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -91,12 +97,19 @@ public class CompraClienteServices {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            jsonb = JsonbBuilder.create();
+            if (response.statusCode() == 200) {
+                jsonb = JsonbBuilder.create();
 
-            listaDetalleCompraDeUnUsuario = jsonb.fromJson(response.body(), new ArrayList<CompraCliente>() {
-            }.getClass().getGenericSuperclass());
+                listaDetalleCompraDeUnUsuario = jsonb.fromJson(response.body(), new ArrayList<CompraCliente>() {
+                }.getClass().getGenericSuperclass());
 
-            return listaDetalleCompraDeUnUsuario;
+                return listaDetalleCompraDeUnUsuario;
+            } else {
+                System.out.println("Error al obtener un usuario: " + response.body());
+                System.out.println("Error al obtener un usuario: " + response.headers());
+                System.out.println("Error al obtener un usuario: " + response.request().headers());
+                return null;
+            }
 
         } catch (Exception e) {
             Logger.getLogger(UsuarioServices.class.getName()).log(Level.SEVERE, null, e);
@@ -121,11 +134,15 @@ public class CompraClienteServices {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            jsonb = JsonbBuilder.create();
-
-            compraCliente = jsonb.fromJson(response.body(), CompraCliente.class);
-
-            return compraCliente;
+            if (response.statusCode() == 200) {
+                jsonb = JsonbBuilder.create();
+                compraCliente = jsonb.fromJson(response.body(), CompraCliente.class);
+                return compraCliente;
+            } else {
+                System.err.println("Error al actualizar producto. Código de respuesta: " + response.headers());
+                System.err.println("Error al actualizar producto. Código de respuesta: " + response.headers().toString());
+                return null;
+            }
 
         } catch (Exception e) {
             Logger.getLogger(UsuarioServices.class.getName()).log(Level.SEVERE, null, e);
@@ -136,7 +153,7 @@ public class CompraClienteServices {
     public boolean actualizarDetalleCompra(CompraCliente compraCliente) {
         try {
 
-            String url = Api.put_compra_cliente;
+            String url = Api.put_compra_cliente + "/" + compraCliente.getIdCompraCliente();
 
             jsonb = JsonbBuilder.create();
 

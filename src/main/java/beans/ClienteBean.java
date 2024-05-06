@@ -99,7 +99,7 @@ public class ClienteBean implements Serializable {
 
     public void obtenerComprasClienteActivo(Long id) {
 
-        this.listaProductosCompradosUsuarioActivo = operadorServices.obtenerCompraDetalleDeUnUsuario(id);
+        this.listaProductosCompradosUsuarioActivo = operadorServices.obtenerCompraDetalleDeUnUsuario(id, "cliente");
 
     }
 

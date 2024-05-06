@@ -102,7 +102,7 @@ public class UsuarioBean implements Serializable {
                 this.clienteBean.obtenerComprasClienteActivo(usuarioEncontrado.getIdUsuario());
             } else {
                 this.paginaActualCO = "operador/operadorVentas.xhtml";
-                this.operadorBean.obtieneProductosOperadorActivo(usuarioEncontrado.getIdUsuario());
+                this.operadorBean.obtieneProductosPendienteOperador(usuarioEncontrado.getIdUsuario());
             }
         }
         

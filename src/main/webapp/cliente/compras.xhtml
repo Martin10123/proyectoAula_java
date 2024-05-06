@@ -27,7 +27,7 @@
                 <h:outputText value="#{proComp.estadoCompra}" />
             </p:column>
             <p:column headerText="Operador seleccionado">
-                <h:outputText value="#{usuarioBean.usuarioAConocerOperador(proComp.idOperador)}" />
+                <h:outputText value="#{usuarioBean.usuarioAConocerOperador(proComp.operador.idUsuario)}" />
             </p:column>
         </p:dataTable>
     </h:body>

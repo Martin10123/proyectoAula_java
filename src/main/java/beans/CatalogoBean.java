@@ -25,6 +25,13 @@ public class CatalogoBean implements Serializable {
         this.listaProductos = this.catalogoServices.obtenerProductosCatalogo();
     }
     
+    public void actualizarCatalogoDespuesCompra() {
+        
+        this.listaProductos = new ArrayList<>();
+        
+        this.listaProductos = this.catalogoServices.obtenerProductosCatalogo();
+    }
+    
     public String saberFechaActual() {
         Date fechaHoraActual = new Date();
 

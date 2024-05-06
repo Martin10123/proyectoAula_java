@@ -6,18 +6,20 @@ public class Api {
     
     // Usuario
     public static final String get_usuarios = url + "/usuarios";
-    public static final String get_usuario = url + "/login";
+    public static final String login_usuario = url + "/login";
+    public static final String get_usuario = url + "/usuario";
     public static final String post_usuario = url + "/usuario";
     
     // Producto
     public static final String get_productos = url + "/productos";
-    public static final String put_producto = url + "/actualizarProducto";
+    public static final String get_producto = url + "/producto";
+    public static final String put_producto = url + "/producto";
     
     // CompraCliente
     public static final String get_compras_cliente = url + "/detalles";
-    public static final String get_compra_cliente = url + "/detalle/{id}";
-    public static final String get_compras_cliente_de_un_usuario = url + "/detalle/";
+    public static final String get_compra_cliente = url + "/detalle";
+    public static final String get_compras_cliente_de_un_usuario = url + "/detalle";
     public static final String post_compra_cliente = url + "/detalle";
-    public static final String put_compra_cliente = url + "/actualizarDetalle";
+    public static final String put_compra_cliente = url + "/detalle";
     
 }

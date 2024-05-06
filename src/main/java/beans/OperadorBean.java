@@ -6,6 +6,7 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import modelos.CompraCliente;
 import modelos.Producto;
 import org.primefaces.PrimeFaces;
@@ -39,35 +40,29 @@ public class OperadorBean implements Serializable {
     public OperadorBean() {
     }
 
-    public void obtieneProductosOperadorActivo(Long id) {
+    public void obtieneProductosPendienteOperador(Long id) {
 
-        this.listaProductosOperadorActivo = this.operadorServices.obtenerCompraDetalleDeUnUsuario(id);
+        this.listaProductosOperadorActivo = this.operadorServices.obtenerCompraDetalleDeUnUsuario(id, "operador")
+                .stream().filter(p -> p.getEstadoCompra().equals("Pendiente")).collect(Collectors.toList());
 
-//        this.obtenerTodosLosProductos();
-//        this.mostrarProductosVendidos();
+        this.obtenerTodosLosProductosOperador(id);
+        this.mostrarProductosVendidos(id);
     }
 
-    public void obtenerTodosLosProductos() {
+    public void obtenerTodosLosProductosOperador(Long id) {
 
         this.listaTodosLosProductosEsteUsuario.clear();
+        
+        this.listaTodosLosProductosEsteUsuario = this.operadorServices.obtenerCompraDetalleDeUnUsuario(id, "operador");
 
-        for (CompraCliente prodComCli : this.clienteBean.getListaTodosProductosComprados()) {
-            if (prodComCli.getOperador().getIdUsuario()
-                    .equals(this.usuarioBean.getUsuarioActivo().getIdUsuario())) {
-                this.listaTodosLosProductosEsteUsuario.add(prodComCli);
-            }
-        }
     }
 
-    public void mostrarProductosVendidos() {
+    public void mostrarProductosVendidos(Long id) {
 
         this.listaProductosVendidos.clear();
-
-        for (CompraCliente proVendido : this.clienteBean.getListaTodosProductosComprados()) {
-            if (proVendido.getEstadoCompra().equals("Vendido")) {
-                listaProductosVendidos.add(proVendido);
-            }
-        }
+        
+        this.listaProductosVendidos = this.operadorServices.obtenerCompraDetalleDeUnUsuario(id, "operador")
+                .stream().filter(p -> p.getEstadoCompra().equals("Vendido")).collect(Collectors.toList());
 
     }
 
@@ -81,7 +76,7 @@ public class OperadorBean implements Serializable {
             MensajesAlertas.showError("Llene el campo", "Complete la información de la dirección");
             return;
         }
-
+        
         Producto productoModiCatalogo = this.catalogoServices.obtenerProducto(this.productoSeleccionAEnviar.getProducto().getIdProducto());
 
         if (this.productoSeleccionAEnviar.getProducto().getCantidadAlmacenamiento() == 0
@@ -100,7 +95,9 @@ public class OperadorBean implements Serializable {
         }
 
         this.catalogoServices.actualizarProducto(productoModiCatalogo);
-        this.operadorServices.actualizarDetalleCompra(productoSeleccionAEnviar);
+        this.operadorServices.actualizarDetalleCompra(this.productoSeleccionAEnviar);
+        this.obtieneProductosPendienteOperador(this.productoSeleccionAEnviar.getOperador().getIdUsuario());
+        this.catalogoBean.actualizarCatalogoDespuesCompra();
 
         this.productoSeleccionAEnviar = new CompraCliente();
         this.productoSeleccionACancelar = new CompraCliente();
@@ -120,6 +117,8 @@ public class OperadorBean implements Serializable {
         prodCliACancelar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
         this.operadorServices.actualizarDetalleCompra(prodCliACancelar);
+        this.obtieneProductosPendienteOperador(this.productoSeleccionAEnviar.getOperador().getIdUsuario());
+        this.catalogoBean.actualizarCatalogoDespuesCompra();
 
         this.productoSeleccionACancelar = new CompraCliente();
         this.productoSeleccionAEnviar = new CompraCliente();

@@ -9,7 +9,6 @@ public class CompraCliente {
     private String direccionEnvio;
     private String estadoCompra;
     private String descripcionProducto;
-    private String idOperador;
     private Usuario operador;
     private Usuario cliente;
     private Producto producto;
@@ -17,7 +16,7 @@ public class CompraCliente {
     public CompraCliente() {
     }
 
-    public CompraCliente(Long idCompraCliente, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, String idOperador, Usuario operador, Usuario cliente, Producto producto) {
+    public CompraCliente(Long idCompraCliente, int cantidadComprada, double precioTotal, String fechaCompra, String fechaConfirmacion, String direccionEnvio, String estadoCompra, String descripcionProducto, Usuario operador, Usuario cliente, Producto producto) {
         this.idCompraCliente = idCompraCliente;
         this.cantidadComprada = cantidadComprada;
         this.precioTotal = precioTotal;
@@ -26,7 +25,6 @@ public class CompraCliente {
         this.direccionEnvio = direccionEnvio;
         this.estadoCompra = estadoCompra;
         this.descripcionProducto = descripcionProducto;
-        this.idOperador = idOperador;
         this.operador = operador;
         this.cliente = cliente;
         this.producto = producto;
@@ -128,17 +126,8 @@ public class CompraCliente {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
-
-    public String getIdOperador() {
-        return idOperador;
-    }
-
-    public void setIdOperador(String idOperador) {
-        this.idOperador = idOperador;
-    }
-
     @Override
     public String toString() {
-        return "CompraCliente{" + "idCompraCliente=" + idCompraCliente + ", cantidadComprada=" + cantidadComprada + ", precioTotal=" + precioTotal + ", fechaCompra=" + fechaCompra + ", fechaConfirmacion=" + fechaConfirmacion + ", direccionEnvio=" + direccionEnvio + ", estadoCompra=" + estadoCompra + ", descripcionProducto=" + descripcionProducto + ", idOperador=" + idOperador + ", operador=" + operador + ", cliente=" + cliente + ", producto=" + producto + '}';
+        return "CompraCliente{" + "idCompraCliente=" + idCompraCliente + ", cantidadComprada=" + cantidadComprada + ", precioTotal=" + precioTotal + ", fechaCompra=" + fechaCompra + ", fechaConfirmacion=" + fechaConfirmacion + ", direccionEnvio=" + direccionEnvio + ", estadoCompra=" + estadoCompra + ", descripcionProducto=" + descripcionProducto  + ", operador=" + operador + ", cliente=" + cliente + ", producto=" + producto + '}';
     }
 }

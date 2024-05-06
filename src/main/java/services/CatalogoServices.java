@@ -46,10 +46,10 @@ public class CatalogoServices {
         }
 
     }
-    
+
     public boolean actualizarProducto(Producto producto) {
         try {
-            
+
             String url = Api.put_producto;
 
             jsonb = JsonbBuilder.create();
@@ -61,7 +61,7 @@ public class CatalogoServices {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200) {
                 return true;
             } else {
@@ -69,20 +69,20 @@ public class CatalogoServices {
                 System.err.println("Error al actualizar producto. Código de respuesta: " + response.headers().toString());
                 return false;
             }
-            
+
         } catch (Exception e) {
             Logger.getLogger(UsuarioServices.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
     }
-    
+
     public Producto obtenerProducto(Long id) {
 
         try {
-            
+
             Producto producto = new Producto();
-            
-            String url = Api.get_productos + "/" + id;
+
+            String url = Api.get_producto + "/" + id;
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -92,11 +92,15 @@ public class CatalogoServices {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            jsonb = JsonbBuilder.create();
-
-            producto = jsonb.fromJson(response.body(), Producto.class);
-
-            return producto;
+            if (response.statusCode() == 200) {
+                jsonb = JsonbBuilder.create();
+                producto = jsonb.fromJson(response.body(), Producto.class);
+                return producto;
+            } else {
+                System.err.println("Error al obtener producto. Código de respuesta: " + response.headers());
+                System.err.println("Error al obtener producto. Código de respuesta: " + response.headers().toString());
+                return null;
+            }
 
         } catch (Exception e) {
             Logger.getLogger(UsuarioServices.class.getName()).log(Level.SEVERE, null, e);

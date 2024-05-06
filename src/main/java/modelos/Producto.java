@@ -79,4 +79,9 @@ public class Producto {
         this.disponibilidad = disponibilidad;
     }
 
+    @Override
+    public String toString() {
+        return "Producto{" + "idProducto=" + idProducto + ", nombreProducto=" + nombreProducto + ", precio=" + precio + ", tipo=" + tipo + ", cantidad=" + cantidad + ", cantidadAlmacenamiento=" + cantidadAlmacenamiento + ", disponibilidad=" + disponibilidad + '}';
+    }
+
 }
