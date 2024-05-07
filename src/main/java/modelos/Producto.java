@@ -3,6 +3,7 @@ package modelos;
 public class Producto {
 
     private Long idProducto;
+    private String imagenProducto;
     private String nombreProducto;
     private double precio;
     private String tipo;
@@ -13,8 +14,9 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Long idProducto, String nombreProducto, double precio, String tipo, String cantidad, int cantidadAlmacenamiento, boolean disponibilidad) {
+    public Producto(Long idProducto, String imagenProducto, String nombreProducto, double precio, String tipo, String cantidad, int cantidadAlmacenamiento, boolean disponibilidad) {
         this.idProducto = idProducto;
+        this.imagenProducto = imagenProducto;
         this.nombreProducto = nombreProducto;
         this.precio = precio;
         this.tipo = tipo;
@@ -29,6 +31,14 @@ public class Producto {
 
     public void setIdProducto(Long idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public String getImagenProducto() {
+        return imagenProducto;
+    }
+
+    public void setImagenProducto(String imagenProducto) {
+        this.imagenProducto = imagenProducto;
     }
 
     public String getNombreProducto() {

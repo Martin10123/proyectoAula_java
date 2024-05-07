@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;1,100;1,200;1,400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,800;1,100;1,200;1,300;1,400;1,500;1,700&display=swap");
+
+*, body, * body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    background: #eee;
+}
+
+body .ui-inputfield {
+    width: 100% !important;
+}
+
+/* Botones */
+.btn-primary, .btn-red {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid #007bff;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    color: #007bff;
+    background-color: transparent;
+    border-color: #007bff;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary:active {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #00428a;
+}
+
+.btn-red {
+    color: #ff0000;
+    border-color: #ff0000;
+}
+
+
+.btn-red:hover {
+    color: #fff;
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+/* -------- */
+
+body .ui-panel .ui-panel-content {
+    background: transparent !important;
+    padding: 0 1rem !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+body .ui-card .ui-card-content {
+    padding: 0 !important;
+}

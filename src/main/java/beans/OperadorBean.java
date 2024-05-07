@@ -113,11 +113,11 @@ public class OperadorBean implements Serializable {
 
         CompraCliente prodCliACancelar = this.operadorServices.obtenerUnaCompraDetalle(this.productoSeleccionACancelar.getIdCompraCliente());
 
-        prodCliACancelar.setEstadoCompra(this.productoSeleccionACancelar.getEstadoCompra());
+        prodCliACancelar.setEstadoCompra("Cancelado por el operador: " + this.productoSeleccionACancelar.getEstadoCompra());
         prodCliACancelar.setFechaConfirmacion(this.catalogoBean.saberFechaActual());
 
         this.operadorServices.actualizarDetalleCompra(prodCliACancelar);
-        this.obtieneProductosPendienteOperador(this.productoSeleccionAEnviar.getOperador().getIdUsuario());
+        this.obtieneProductosPendienteOperador(this.productoSeleccionACancelar.getOperador().getIdUsuario());
         this.catalogoBean.actualizarCatalogoDespuesCompra();
 
         this.productoSeleccionACancelar = new CompraCliente();

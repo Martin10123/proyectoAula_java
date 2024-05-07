@@ -19,7 +19,7 @@
                 <ui:repeat value="#{catalogoBean.listaProductos}" var="producto">
                     <p:card>
                         <f:facet name="header">
-                            <p:graphicImage class="card_img" name="imagenes/image2.jpg" />
+                            <p:graphicImage class="card_img" name="imagenes/#{producto.imagenProducto}" />
                         </f:facet>
                         <f:facet name="title">
                             #{producto.nombreProducto}

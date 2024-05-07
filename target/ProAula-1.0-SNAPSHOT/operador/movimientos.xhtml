@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <p:dataTable value="#{operadorBean.listaTodosLosProductosEsteUsuario}" var="movProducto">
+            <p:column headerText="Nombre del producto">
+                <h:outputText value="#{movProducto.producto.nombreProducto}" />
+            </p:column>
+            <p:column headerText="Nombre del cliente">
+                <h:outputText value="#{movProducto.cliente.nombreCompleto}" />
+            </p:column>
+            <p:column headerText="Dirección">
+                <h:outputText value="#{movProducto.direccionEnvio}" />
+            </p:column>
+            <p:column headerText="Fecha de acción">
+                <h:outputText value="#{movProducto.fechaConfirmacion}" />
+            </p:column>
+            <p:column headerText="Acción tomada sobre el producto">
+                <h:outputText value="#{movProducto.estadoCompra}" />
+            </p:column>
+            <p:column headerText="Cantidad comprada">
+                <h:outputText value="#{movProducto.cantidadComprada}" />
+            </p:column>
+            <p:column headerText="Precio">
+                <h:outputText value="$#{catalogoBean.precioNormal(movProducto.precioTotal)}" />
+            </p:column>
+        </p:dataTable>
+    </h:body>
+</html>

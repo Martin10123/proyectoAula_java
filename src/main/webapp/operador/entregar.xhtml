@@ -16,7 +16,7 @@
             <ui:repeat value="#{operadorBean.listaProductosOperadorActivo}" var="producto">
                 <p:card>
                     <f:facet name="header">
-                        <p:graphicImage class="card_img" name="imagenes/image2.jpg" />
+                        <p:graphicImage class="card_img" name="imagenes/#{producto.producto.imagenProducto}" />
                     </f:facet>
                     <f:facet name="title">
                         #{producto.producto.nombreProducto}
